@@ -23,8 +23,11 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${spring.security.oauth2.client.front-redirect-url}")
-    private String redirectUrl;
+    @Value("${spring.security.oauth2.client.existing-user-redirect-url}")
+    private String existingUserRedirectUrl;
+
+    @Value("${spring.security.oauth2.client.new-user-redirect-url}")
+    private String newUserRedirectUrl;
 
     private final RedisUtil redisUtil;
 
@@ -50,7 +53,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 //                .toUriString();
 
         response.addHeader("Set-Cookie", cookie.toString());
-        response.sendRedirect(redirectUrl);
+
+        if (!principal.isNew()) {
+            response.sendRedirect(existingUserRedirectUrl);
+        } else {
+            response.sendRedirect(newUserRedirectUrl);
+        }
     }
 
     private String issueTempToken(String email, Long id, Role role) {
