@@ -5,7 +5,7 @@ import com.gdgoc.arcive.global.security.jwt.JwtTokenAuthenticator;
 import com.gdgoc.arcive.global.security.jwt.JwtTokenProvider;
 import com.gdgoc.arcive.global.security.jwt.exception.CustomJwtException;
 import com.gdgoc.arcive.global.security.jwt.exception.JwtErrorCode;
-import com.gdgoc.arcive.infra.redis.RedisUtil;
+import com.gdgoc.arcive.infra.redis.service.RedisService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtTokenAuthenticator jwtTokenAuthenticator;
-	private final RedisUtil redisUtil;
+	private final RedisService redisService;
 	private final SecurityProperties securityProperties;
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		if (token != null) {
 			// Redis 블랙리스트에 있는 토큰인지 확인
-			if (redisUtil.hasKey("blacklist:" + token)) {
+			if (redisService.hasKey("blacklist:" + token)) {
 				throw new CustomJwtException(JwtErrorCode.TOKEN_REVOKED);
 			}
 

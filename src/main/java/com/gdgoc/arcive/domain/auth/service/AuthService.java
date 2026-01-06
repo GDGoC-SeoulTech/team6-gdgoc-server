@@ -5,7 +5,7 @@ import com.gdgoc.arcive.domain.auth.exception.CustomAuthException;
 import com.gdgoc.arcive.global.security.dto.TempTokenInfo;
 import com.gdgoc.arcive.global.security.dto.TokenResponse;
 import com.gdgoc.arcive.global.security.jwt.JwtTokenProvider;
-import com.gdgoc.arcive.infra.redis.RedisUtil;
+import com.gdgoc.arcive.infra.redis.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AuthService {
 
-    private final RedisUtil redisUtil;
+    private final RedisService redisService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public TokenResponse issueAccessToken(String tempToken) {
@@ -25,7 +25,7 @@ public class AuthService {
             throw new CustomAuthException(AuthErrorCode.TOKEN_NOT_FOUND);
         }
 
-        TempTokenInfo value = redisUtil.getAndDeleteValue(tempToken, TempTokenInfo.class).orElseThrow(
+        TempTokenInfo value = redisService.getAndDeleteValue(tempToken, TempTokenInfo.class).orElseThrow(
                 () -> new CustomAuthException(AuthErrorCode.INVALID_TOKEN)
         );
 
@@ -40,7 +40,7 @@ public class AuthService {
 
         Long expiration = jwtTokenProvider.getExpiration(accessToken);
         if (expiration > 0) {
-            redisUtil.saveValue("blacklist:" + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+            redisService.saveValue("blacklist:" + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
         }
     }
 }

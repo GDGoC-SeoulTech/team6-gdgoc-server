@@ -3,7 +3,7 @@ package com.gdgoc.arcive.global.security.oauth2.handler;
 import com.gdgoc.arcive.domain.member.entity.Role;
 import com.gdgoc.arcive.global.security.dto.TempTokenInfo;
 import com.gdgoc.arcive.global.security.oauth2.entity.CustomOAuth2User;
-import com.gdgoc.arcive.infra.redis.RedisUtil;
+import com.gdgoc.arcive.infra.redis.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${spring.security.oauth2.client.new-user-redirect-url}")
     private String newUserRedirectUrl;
 
-    private final RedisUtil redisUtil;
+    private final RedisService redisService;
 
     private final Long tempTokenExpirationTime = 1200L;
 
@@ -63,7 +63,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private String issueTempToken(String email, Long id, Role role) {
         String tempToken = UUID.randomUUID().toString();
-        redisUtil.saveValue(tempToken, new TempTokenInfo(email, id, role), tempTokenExpirationTime, TimeUnit.SECONDS);
+        redisService.saveValue(tempToken, new TempTokenInfo(email, id, role), tempTokenExpirationTime, TimeUnit.SECONDS);
         return tempToken;
     }
 }
