@@ -22,7 +22,7 @@ public class AuthService {
 
     public TokenResponse issueAccessToken(String tempToken) {
         if (tempToken == null) {
-            throw new CustomAuthException(AuthErrorCode.TOKEN_NOT_FOUNT);
+            throw new CustomAuthException(AuthErrorCode.TOKEN_NOT_FOUND);
         }
 
         TempTokenInfo value = redisUtil.getAndDeleteValue(tempToken, TempTokenInfo.class).orElseThrow(
@@ -35,7 +35,7 @@ public class AuthService {
     @Transactional
     public void logout(String accessToken) {
         if (accessToken == null) {
-            throw new CustomAuthException(AuthErrorCode.TOKEN_NOT_FOUNT);
+            throw new CustomAuthException(AuthErrorCode.TOKEN_NOT_FOUND);
         }
 
         Long expiration = jwtTokenProvider.getExpiration(accessToken);
