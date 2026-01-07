@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +35,10 @@ public class AdminController {
 
     @Operation(summary = "가입 사용자 목록 조회 (승인 대기 포함) [대훈]", description = "모든 가입 사용자 목록을 조회합니다.")
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<MemberResponse>>> getAllMembers() {
-        return ResponseEntity.ok(ApiResponse.success(adminService.getAllMembers()));
+    public ResponseEntity<ApiResponse<Page<MemberResponse>>> getAllMembers(
+            @Parameter(description = "페이지네이션 정보 (page, size, sort)")
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getAllMembers(pageable)));
     }
 
     @Operation(summary = "멤버 승인 [대훈]", description = "승인 대기 상태의 멤버를 승인합니다. (PENDING -> MEMBER)")

@@ -27,6 +27,8 @@ import com.gdgoc.arcive.domain.project.exception.ProjectErrorCode;
 import com.gdgoc.arcive.domain.project.exception.ProjectException;
 import com.gdgoc.arcive.domain.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,11 +48,9 @@ public class AdminService {
     /**
      * 가입 사용자 목록 조회 (승인 대기 포함)
      */
-    public List<MemberResponse> getAllMembers() {
-        List<Member> members = memberRepository.findAll();
-        return members.stream()
-                .map(MemberResponse::from)
-                .toList();
+    public Page<MemberResponse> getAllMembers(Pageable pageable) {
+        return memberRepository.findAll(pageable)
+                .map(MemberResponse::from);
     }
 
     /**
