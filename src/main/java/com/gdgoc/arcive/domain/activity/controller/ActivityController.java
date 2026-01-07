@@ -1,6 +1,7 @@
 package com.gdgoc.arcive.domain.activity.controller;
 
 import com.gdgoc.arcive.domain.activity.dto.ActivityResponse;
+import com.gdgoc.arcive.domain.activity.dto.SimpleActivityResponse;
 import com.gdgoc.arcive.domain.activity.service.ActivityService;
 import com.gdgoc.arcive.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,9 +22,15 @@ public class ActivityController {
 
     private final ActivityService activityService;
 
-    @Operation(summary = "활동 소개 리스트 조회 [임채영]")
+    @Operation(summary = "활동 리스트 조회 [임채영]")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ActivityResponse>>> getAllActivities() {
+    public ResponseEntity<ApiResponse<List<SimpleActivityResponse>>> getAllActivities() {
+        return ResponseEntity.ok(ApiResponse.success(activityService.getAllSimpleActivities()));
+    }
+
+    @Operation(summary = "활동 소개 리스트 조회 [임채영]")
+    @GetMapping("/intro")
+    public ResponseEntity<ApiResponse<List<ActivityResponse>>> getAllActivitiesIntro() {
         return ResponseEntity.ok(ApiResponse.success(activityService.getAllActivities()));
     }
 }
