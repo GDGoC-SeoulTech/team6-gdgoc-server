@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CorsConfig implements WebMvcConfigurer {
 
-    private static  final String CLIENT = "";
+    private static  final String CLIENT = "team6gdgocweb.vercel.app";
 
     public static CorsConfigurationSource apiConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
