@@ -5,6 +5,7 @@ import com.gdgoc.arcive.domain.member.entity.Member;
 import com.gdgoc.arcive.domain.member.entity.MemberProfile;
 import com.gdgoc.arcive.domain.member.repository.MemberRepository;
 import com.gdgoc.arcive.domain.member.repository.MemberProfileRepository;
+import com.gdgoc.arcive.domain.project.dto.ProjectResponse;
 import com.gdgoc.arcive.domain.project.repository.ProjectMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -91,10 +92,10 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getMemberProjects(Long userId) {
+    public List<ProjectResponse> getMemberProjects(Long userId) {
         return projectMemberRepository.findAll().stream()
                 .filter(pm -> pm.getMember().getId().equals(userId))
-                .map(pm -> pm.getProject().getProjectName())
+                .map(pm -> ProjectResponse.from(pm.getProject()))
                 .collect(Collectors.toList());
     }
 

@@ -5,6 +5,7 @@ import com.gdgoc.arcive.domain.member.dto.MemberSummaryResponse;
 import com.gdgoc.arcive.domain.member.dto.MemberDetailResponse;
 import com.gdgoc.arcive.domain.member.dto.MemberUpdateRequest;
 import com.gdgoc.arcive.domain.member.service.MemberService;
+import com.gdgoc.arcive.domain.project.dto.ProjectResponse;
 import com.gdgoc.arcive.global.security.oauth2.entity.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,7 @@ public class MemberController {
 
 
     @GetMapping("/me/projects")
-    public ResponseEntity<List<String>> getMyProjects(@AuthenticationPrincipal CustomOAuth2User user) {
+    public ResponseEntity<List<ProjectResponse>> getMyProjects(@AuthenticationPrincipal CustomOAuth2User user) {
         return ResponseEntity.ok(memberService.getMemberProjects(user.getId()));
     }
 
