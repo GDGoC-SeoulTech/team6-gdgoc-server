@@ -8,6 +8,7 @@ import com.gdgoc.arcive.domain.member.service.MemberService;
 import com.gdgoc.arcive.domain.project.dto.ProjectResponse;
 import com.gdgoc.arcive.global.security.oauth2.entity.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,7 @@ public class MemberController {
     @PostMapping("/me/onboarding")
     public ResponseEntity<Void> onboardMember(
             @AuthenticationPrincipal CustomOAuth2User user,
-            @RequestBody MemberOnboardingRequest request) {
+            @Valid @RequestBody MemberOnboardingRequest request) {
         memberService.onboardMember(user.getId(), request);
         return ResponseEntity.ok().build();
     }
