@@ -3,9 +3,12 @@ package com.gdgoc.arcive.domain.member.service;
 import com.gdgoc.arcive.domain.member.dto.*;
 import com.gdgoc.arcive.domain.member.entity.Member;
 import com.gdgoc.arcive.domain.member.entity.MemberProfile;
+import com.gdgoc.arcive.domain.member.exception.MemberErrorCode;
+import com.gdgoc.arcive.domain.member.exception.MemberException;
 import com.gdgoc.arcive.domain.member.repository.MemberRepository;
 import com.gdgoc.arcive.domain.member.repository.MemberProfileRepository;
 import com.gdgoc.arcive.domain.project.repository.ProjectMemberRepository;
+import com.gdgoc.arcive.infra.s3.config.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,24 +24,26 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberProfileRepository memberProfileRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final S3Properties s3Properties;
 
     @Transactional
     public void onboardMember(Long memberId, MemberOnboardingRequest request) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("MEMBER_NOT_FOUND"));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         MemberProfile profile = memberProfileRepository.findByMemberIdWithMember(memberId)
                 .orElse(null);
 
         if (profile == null) {
             // MemberProfile이 없으면 생성 (첫 온보딩)
+            String defaultProfileImageUrl = getDefaultProfileImageUrl();
             profile = MemberProfile.create(
                     member,
                     request.getName(),
                     request.getStudentId(),
                     request.getMajor(),
                     request.getGeneration(),
-                    "" // 기본 프로필 이미지 URL (나중에 업데이트 가능)
+                    defaultProfileImageUrl
             );
             memberProfileRepository.save(profile);
         } else {
@@ -82,7 +87,7 @@ public class MemberService {
     public List<MemberSummaryResponse> getMyPartMembers(Long currentMemberId) {
 
         Member me = memberRepository.findById(currentMemberId)
-                .orElseThrow(() -> new IllegalArgumentException("MEMBER_NOT_FOUND"));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         String myPart = me.getRole().name();
 
@@ -101,7 +106,7 @@ public class MemberService {
 
     private MemberProfile findProfileByMemberIdOptimized(Long memberId) {
         return memberProfileRepository.findByMemberIdWithMember(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("PROFILE_NOT_FOUND"));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.PROFILE_NOT_FOUND));
     }
 
 
@@ -130,5 +135,17 @@ public class MemberService {
                 .role(member.getRole().name())
                 .generation(profile.getGeneration())
                 .build();
+    }
+
+    private String getDefaultProfileImageUrl() {
+        if (s3Properties.getS3() != null 
+                && s3Properties.getS3().getUrlPrefix() != null 
+                && s3Properties.getS3().getPaths() != null 
+                && s3Properties.getS3().getPaths().getDefaultFemaleProfileImage() != null) {
+            return s3Properties.getS3().getUrlPrefix() 
+                    + s3Properties.getS3().getPaths().getDefaultFemaleProfileImage();
+        }
+        // S3 설정이 없을 경우 빈 문자열 반환
+        return "";
     }
 }
