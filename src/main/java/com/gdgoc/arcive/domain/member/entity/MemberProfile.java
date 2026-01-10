@@ -21,9 +21,8 @@ public class MemberProfile {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 100)
-    private Major major;
+    private String major;
 
     @Column(nullable = false)
     private int generation;
@@ -38,7 +37,7 @@ public class MemberProfile {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void updateOnboardingInfo(String name, String studentId, Major major, int generation) {
+    public void updateOnboardingInfo(String name, String studentId, String major, int generation) {
         this.name = name;
         this.studentId = studentId;
         this.major = major;

@@ -96,7 +96,7 @@ public class MemberService {
                 .name(profile.getName())
                 .email(member.getEmail())
                 .studentId(profile.getStudentId())
-                .major(profile.getMajor().name())
+                .major(profile.getMajor())
                 .generation(profile.getGeneration())
                 .bio(profile.getBio())
                 .profileImageUrl(profile.getProfileImageUrl())
