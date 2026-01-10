@@ -52,7 +52,7 @@ public class MemberController {
     }
 
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<MemberSummaryResponse>> getMemberList(
             @RequestParam(required = false) Integer generation,
             @RequestParam(required = false) String part) {
